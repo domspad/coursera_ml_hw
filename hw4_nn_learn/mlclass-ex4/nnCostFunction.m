@@ -62,11 +62,19 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+X = [ones(m,1) X]; % m X n+1
+for i=1:m
+	a2 = [1; sigmoid(Theta1 * X(i,:)')];  % 26 X 1
+	h = sigmoid(Theta2 * a2);    % K X 1
+	yi = zeros(num_labels, 1); yi(y(i)) = 1;  % num_labels X 1
+	J = J - sum( yi .* log(h) + (1 - yi).*log(1-h) );
+endfor
 
+J = J/m;
 
+%with regularization...
 
-
-
+J = J + (lambda/(2*m)) * (sum(sum(Theta1(:,2:end) .^2)) + sum(sum(Theta2(:,2:end) .^2)));
 
 
 
