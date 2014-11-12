@@ -30,6 +30,8 @@ J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
 
+
+
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
 %               following parts.
@@ -64,7 +66,11 @@ Theta2_grad = zeros(size(Theta2));
 
 
 %%% Part 1: Forward_propegation, i.e. the cost function J(also regularized)
-%X = [ones(m,1) X]; % m X n+1
+
+%collecting errors for each example
+Delta1 = zeros(size(Theta1)); % 25 X 401
+Delta2 = zeros(size(Theta2)); % K X 26
+
 for i=1:m
 	%the forward propegation
   a1 = X(i,:)'; 
@@ -76,23 +82,33 @@ for i=1:m
 	yi = zeros(num_labels, 1); yi(y(i)) = 1;  % num_labels X 1
 	J = J - sum( yi .* log(a3) + (1 - yi).*log(1-a3) );
 
-  delta3 = a3 - yi;
+  delta3 = a3 - yi;   %K X 1
   delta2 = ( Theta2(:,2:end)' * delta3 ) .* sigmoidGradient(z2); %because don't assign error to constant term
+                      % 25 X K
 
-  Theta2_grad = Theta2_grad + delta3 * (a2)';
-  Theta1_grad = Theta1_grad + delta2 * (a1)';
+  Delta2 = Delta2 + delta3 * (a2)';  % K X 26
+  Delta1 = Delta1 + delta2 * (a1)';  % 25 X 401
 
 endfor
 
+% J cost
 J = J/m;
 
 %with regularization...
-
 J = J + (lambda/(2*m)) * (sum(sum(Theta1(:,2:end) .^2)) + sum(sum(Theta2(:,2:end) .^2)));
 
 %%% The Gradient of the NN 
-Theta2_grad = Theta2_grad / m;
-Theta1_grad = Theta1_grad / m;
+
+Theta2_grad = Theta2_grad + (Delta2 / m);   % K X 26
+Theta1_grad = Theta1_grad + (Delta1 / m);   % 25 X 401
+
+
+%with regularization...
+Theta2_reg = (lambda / m) * [ zeros(size(Theta2,1), 1) Theta2(:,2:end)];
+Theta1_reg = (lambda / m) * [ zeros(size(Theta1,1), 1) Theta1(:,2:end)];
+
+Theta2_grad = Theta2_grad + Theta2_reg;
+Theta1_grad = Theta1_grad + Theta1_reg;
 
 
 % -------------------------------------------------------------
