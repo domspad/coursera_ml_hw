@@ -51,11 +51,33 @@ error_val   = zeros(m, 1);
 %       end
 %
 
+%for i=1:m 
+%	theta = trainLinearReg(X(1:i,:), y(1:i,:), lambda);
+%	error_train(i) = linearRegCostFunction(X(1:i,:), y(1:i,:), theta, 0);
+%	error_val(i) = linearRegCostFunction(Xval, yval, theta, 0);
+%end
+
 % ---------------------- Sample Solution ----------------------
 
 
+%REVISED Learning curve: 1) samples used is randomized
+%						 2) each calculated error is now the average of multiple tests
+num_tests = 50;
 
-
+for i=1:m
+	error_train_i = 0;
+	error_val_i = 0;
+	for j=1:num_tests
+		ind = randperm(m)(1:i);
+		theta = trainLinearReg(X(ind,:), y(ind,:), lambda);
+		error_train_i = error_train_i + ...
+						linearRegCostFunction(X(ind,:), y(ind,:), theta, 0);
+		error_val_i = error_val_i + ...
+						linearRegCostFunction(Xval, yval, theta, 0);
+	end
+	error_train(i) = error_train_i / num_tests;
+	error_val(i) = error_val_i / num_tests;
+end
 
 
 
