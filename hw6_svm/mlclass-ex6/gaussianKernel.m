@@ -15,7 +15,9 @@ sim = 0;
 %               sigma
 %
 %
-
+xdif = x1 - x2;
+kerexp = -(xdif' * xdif)/(2*(sigma^2));
+sim = exp(kerexp);
 
 
 
