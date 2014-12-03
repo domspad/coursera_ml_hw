@@ -40,10 +40,16 @@ Theta_grad = zeros(size(Theta));
 %                     partial derivatives w.r.t. to each element of Theta
 %
 
+ratediff = (X*Theta' - Y) .* R;
+J = (1/2) * sum(sum(ratediff .* ratediff));
+regterm = (lambda/2)*(sum(sum(Theta .* Theta)) + sum(sum(X .* X)));
+J = J + regterm;
 
+X_grad = ratediff * Theta;
+X_grad = X_grad + lambda * X;
 
-
-
+Theta_grad = (X' * ratediff)';
+Theta_grad = Theta_grad + lambda * Theta;
 
 
 
